@@ -50,4 +50,34 @@ impl Network {
 
         current
     }
+
+    pub fn back_propogate(&mut self, inputs: Matrix, targets: Matrix) {
+        let mut errors = targets.subtract(&inputs);
+
+        let mut gradients = inputs.clone().map(self.activation.derivative);
+
+        for i in (0..self.layers.len() - 1).rev() {
+            gradients = gradients.hadamard_product(&errors).map(|x| x * 0.5); // learning rate
+
+            self.weights[i] =
+                self.weights[i].add(&gradients.dot_product(&self.data[i].transpose()));
+
+            self.biases[i] = self.biases[i].add(&gradients);
+
+            errors = self.weights[i].transpose().dot_product(&errors);
+            gradients = self.data[i].map(self.activation.derivative);
+        }
+    }
+
+    pub fn train(&mut self, inputs: Vec<Vec<f64>>, targets: Vec<Vec<f64>>, epochs: u32) {
+        for i in 1..=epochs {
+            if epochs < 100 || i % (epochs / 100) == 0 {
+                println!("Epoch {} of {}", i, epochs);
+            }
+            for j in 0..inputs.len() {
+                let outputs = self.feed_forward(Matrix::from(inputs[j].clone()));
+                self.back_propogate(outputs, Matrix::from(targets[j].clone()));
+            }
+        }
+    }
 }

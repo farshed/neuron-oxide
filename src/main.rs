@@ -1,3 +1,6 @@
+mod data;
+
+use data::*;
 use rand::Rng;
 
 #[derive(Debug)]
@@ -17,10 +20,10 @@ impl NeuralNetwork {
         }
     }
 
-    fn train(&mut self, inputs: Vec<Vec<f64>>, outputs: Vec<f64>, epochs: usize) {
+    fn train(&mut self, inputs: Vec<[f64; 2]>, outputs: Vec<f64>, epochs: usize) {
         for _ in 0..epochs {
             for (i, input) in inputs.iter().enumerate() {
-                let output = self.predict(input.clone());
+                let output = self.predict(input);
 
                 let error = outputs[i] - output;
                 let delta = derivative(output);
@@ -33,7 +36,7 @@ impl NeuralNetwork {
         }
     }
 
-    fn predict(&self, input: Vec<f64>) -> f64 {
+    fn predict(&self, input: &[f64; 2]) -> f64 {
         let mut sum = self.bias;
         for (i, weight) in self.weights.iter().enumerate() {
             sum += input[i] * weight;
@@ -54,40 +57,15 @@ fn derivative(x: f64) -> f64 {
 }
 
 fn main() {
-    let inputs = vec![
-        vec![0.5, 0.5],
-        vec![0.2, 0.8],
-        vec![0.1, 0.9],
-        vec![0.9, 0.0],
-        vec![0.2, 0.3],
-        vec![0.4, 0.4],
-        vec![0.6, 0.3],
-        vec![0.3, 0.7],
-        vec![0.5, 0.2],
-        vec![0.3, 0.4],
-        vec![0.2, 0.3],
-    ];
-    let outputs = vec![1.0, 1.0, 1.0, 0.9, 0.5, 0.8, 0.9, 1.0, 0.7, 0.7, 0.5];
-
-    let test_inputs = vec![
-        vec![0.1, 0.1],
-        vec![0.0, 0.8],
-        vec![0.1, 0.6],
-        vec![0.5, 0.4],
-        vec![0.0, 0.6],
-        vec![0.4, 0.4],
-        vec![0.7, 0.1],
-        vec![0.2, 0.1],
-        vec![0.3, 0.4],
-        vec![0.2, 0.2],
-        vec![0.7, 0.3],
-    ];
+    let inputs = get_training_inputs();
+    let outputs = get_training_outputs();
+    let test_inputs = get_test_inputs();
 
     let mut neural_net = NeuralNetwork::new();
     neural_net.train(inputs, outputs, 10000);
 
     for input in test_inputs.iter() {
-        let prediction = neural_net.predict(input.clone());
+        let prediction = neural_net.predict(input);
         println!("Input: {:?}, Prediction: {:.1}", input, prediction);
     }
 }

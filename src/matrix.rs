@@ -58,7 +58,7 @@ impl Matrix {
     }
 
     #[inline]
-    pub fn add(&self, other: &Self) -> Self {
+    pub fn sum(&self, other: &Self) -> Self {
         if self.rows != other.rows || self.cols != other.cols {
             panic!("Cannot add matrices of different dimensions");
         }
@@ -147,19 +147,19 @@ impl Matrix {
     }
 }
 
-impl Add for &Matrix {
+impl Add for Matrix {
     type Output = Matrix;
 
     fn add(self, rhs: Self) -> Self::Output {
-        self.add(rhs)
+        self.sum(&rhs)
     }
 }
 
-impl Mul for &Matrix {
+impl Mul for Matrix {
     type Output = Matrix;
 
     fn mul(self, rhs: Self) -> Self::Output {
-        self.dot_product(rhs)
+        self.dot_product(&rhs)
     }
 }
 

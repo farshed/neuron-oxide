@@ -39,13 +39,12 @@ const derivative = (x) => x * (1 - x);
 
 // Train and test
 
-const inputs = data.training_inputs;
-const outputs = data.training_outputs;
+const trainingInputs = data.training_inputs;
+const trainingOutputs = data.training_outputs;
+const testInputs = data.test_inputs;
 
 const neuralNet = new NeuralNetwork();
-neuralNet.train(inputs, outputs, 1e5);
-
-const testInputs = data.test_inputs;
+neuralNet.train(trainingInputs, trainingOutputs, 1e5);
 
 let correct = 0;
 
@@ -60,6 +59,6 @@ for (const input of testInputs) {
 	console.log(`Input: [${input}], Prediction: ${prediction.toFixed(1)}`);
 }
 
-const accuracy = ((correct * 100) / testInputs.length).toFixed(1);
+const accuracy = ((correct * 100) / testInputs.length).toFixed(2);
 
 console.log(`${correct} / ${testInputs.length} correct. Accuracy: ${accuracy}%`);

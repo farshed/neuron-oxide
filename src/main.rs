@@ -18,6 +18,15 @@ impl NeuralNetwork {
         }
     }
 
+    fn predict(&self, input: &[f64; 2]) -> f64 {
+        let mut sum = self.bias;
+        for (i, weight) in self.weights.iter().enumerate() {
+            sum += input[i] * weight;
+        }
+
+        sigmoid(sum)
+    }
+
     fn train(&mut self, inputs: Vec<[f64; 2]>, outputs: Vec<f64>, epochs: usize) {
         for _ in 0..epochs {
             for (i, input) in inputs.iter().enumerate() {
@@ -32,15 +41,6 @@ impl NeuralNetwork {
                 self.bias += self.learning_rate * error * delta;
             }
         }
-    }
-
-    fn predict(&self, input: &[f64; 2]) -> f64 {
-        let mut sum = self.bias;
-        for (i, weight) in self.weights.iter().enumerate() {
-            sum += input[i] * weight;
-        }
-
-        sigmoid(sum)
     }
 }
 

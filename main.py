@@ -1,81 +1,52 @@
+import math
+import json
 import random
 
-with open('data.json') as data_file:
-  data = data_file.read()
+with open('data.json') as file:
+  data = json.load(file)
 
-class NeuralNet:
+class NeuralNetwork:
   def __init__(self):
     self.weights = [random.random(), random.random()]
     self.bias = random.random()
     self.learning_rate = 0.1
 
-  def predict(self, _input):
-    _sum = self.bias
-    for weight in self.weights:
-      _sum += _input[]
+  def predict(self, inp):
+    sum_ = sum(inp[i] * weight for i, weight in enumerate(self.weights)) + self.bias
+    return sigmoid(sum_)
   
-  const data = require('./data.json');
+  def train(self, inputs, outputs, epochs):
+    for _ in range(epochs):
+      for j, inp in enumerate(inputs):
+        output = self.predict(inp)
 
-class NeuralNetwork {
-	constructor() {
-		this.weights = [Math.random(), Math.random()];
-		this.bias = Math.random();
-		this.learningRate = 0.1;
-	}
+        error = outputs[j] - output
+        delta = derivative(output)
 
-	predict(input) {
-		const sum = this.weights.reduce((acc, weight, i) => {
-			acc += input[i] * weight;
-			return acc;
-		}, this.bias);
+        for k in range(len(self.weights)):
+          self.weights[k] += self.learning_rate * error * inp[k] * delta
 
-		return sigmoid(sum);
-	}
+        self.bias += self.learning_rate * error * delta
 
-	train(inputs, outputs, epochs) {
-		for (let i = 0; i < epochs; i++) {
-			inputs.forEach((input, j) => {
-				const output = this.predict(input);
 
-				const error = outputs[j] - output;
-				const delta = derivative(output);
+def sigmoid(x):
+  return 1 / (1 + math.exp(-x))
 
-				this.weights.forEach((_, k) => {
-					this.weights[k] += this.learningRate * error * input[k] * delta;
-				});
+def derivative(x):
+  return x * (1-x)
 
-				this.bias += this.learningRate * error * delta;
-			});
-		}
-	}
-}
 
-const sigmoid = (x) => 1 / (1 + Math.exp(-x));
-const derivative = (x) => x * (1 - x);
+# Train and test
 
-// Train and test
+inputs = data['training_inputs']
+outputs = data['training_outputs']
+test_inputs = data['test_inputs']
 
-const inputs = data.training_inputs;
-const outputs = data.training_outputs;
+neural_net = NeuralNetwork()
+neural_net.train(inputs, outputs, 10000)
 
-const neuralNet = new NeuralNetwork();
-neuralNet.train(inputs, outputs, 1e5);
 
-const testInputs = data.test_inputs;
+for inp in test_inputs:
+	prediction = neural_net.predict(inp);
+	print(f'Input: {inp}, Prediction: {"{:.1f}".format(prediction)}')
 
-let correct = 0;
-
-for (const input of testInputs) {
-	const prediction = neuralNet.predict(input);
-	const actual = input[0] + input[1];
-
-	// if (Math.abs(prediction - actual) <= 0.1) {
-	if (prediction.toFixed(1) === actual.toFixed(1)) {
-		correct++;
-	}
-	console.log(`Input: [${input}], Prediction: ${prediction.toFixed(1)}`);
-}
-
-const accuracy = ((correct * 100) / testInputs.length).toFixed(1);
-
-console.log(`${correct} / ${testInputs.length} correct. Accuracy: ${accuracy}%`);
